@@ -15,7 +15,6 @@ export default function Home() {
   const [result, setResult] = useState<EmojiResult | null>(null)
   const [referenceImages, setReferenceImages] = useState<string[]>([])
   const [isDragging, setIsDragging] = useState(false)
-  const [quality, setQuality] = useState<'low' | 'medium' | 'high'>('medium')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleGenerate = async () => {
@@ -36,8 +35,7 @@ export default function Home() {
         },
         body: JSON.stringify({ 
           word: word.trim(),
-          referenceImages: referenceImages.length > 0 ? referenceImages : undefined,
-          quality
+          referenceImages: referenceImages.length > 0 ? referenceImages : undefined
         }),
       })
 
@@ -254,44 +252,6 @@ export default function Home() {
                     })
                   }}
                 />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Quality
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  onClick={() => setQuality('low')}
-                  className={`py-2 px-4 rounded-md border-2 transition-colors ${
-                    quality === 'low'
-                      ? 'border-blue-500 bg-blue-50 text-blue-600'
-                      : 'border-gray-300 hover:border-gray-400 text-gray-600'
-                  }`}
-                >
-                  Low
-                </button>
-                <button
-                  onClick={() => setQuality('medium')}
-                  className={`py-2 px-4 rounded-md border-2 transition-colors ${
-                    quality === 'medium'
-                      ? 'border-blue-500 bg-blue-50 text-blue-600'
-                      : 'border-gray-300 hover:border-gray-400 text-gray-600'
-                  }`}
-                >
-                  Medium
-                </button>
-                <button
-                  onClick={() => setQuality('high')}
-                  className={`py-2 px-4 rounded-md border-2 transition-colors ${
-                    quality === 'high'
-                      ? 'border-blue-500 bg-blue-50 text-blue-600'
-                      : 'border-gray-300 hover:border-gray-400 text-gray-600'
-                  }`}
-                >
-                  High
-                </button>
               </div>
             </div>
 
