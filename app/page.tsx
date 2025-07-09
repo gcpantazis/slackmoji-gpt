@@ -14,6 +14,7 @@ export default function Home() {
   const [error, setError] = useState('')
   const [result, setResult] = useState<EmojiResult | null>(null)
   const [referenceImages, setReferenceImages] = useState<string[]>([])
+  const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleGenerate = async () => {
@@ -75,6 +76,91 @@ export default function Home() {
     URL.revokeObjectURL(url)
   }
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+
+    const items = Array.from(e.dataTransfer.items)
+    const imagePromises: Promise<string | null>[] = []
+
+    for (const item of items) {
+      if (item.kind === 'file' && item.type.startsWith('image/')) {
+        const file = item.getAsFile()
+        if (file) {
+          imagePromises.push(
+            new Promise<string | null>((resolve) => {
+              const reader = new FileReader()
+              reader.onloadend = () => {
+                if (reader.result) {
+                  resolve(reader.result.toString())
+                } else {
+                  resolve(null)
+                }
+              }
+              reader.onerror = () => {
+                console.error('Failed to read file')
+                resolve(null)
+              }
+              reader.readAsDataURL(file)
+            })
+          )
+        }
+      } else if (item.kind === 'string' && item.type === 'text/html') {
+        await new Promise<void>((resolve) => {
+          item.getAsString(async (htmlString) => {
+            const parser = new DOMParser()
+            const doc = parser.parseFromString(htmlString, 'text/html')
+            const imgElements = doc.querySelectorAll('img')
+            
+            for (const img of imgElements) {
+              const src = img.src
+              if (src && (src.startsWith('http://') || src.startsWith('https://'))) {
+                imagePromises.push(
+                  fetch('/api/proxy-image', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: src }),
+                  })
+                    .then(response => response.json())
+                    .then(data => data.dataUrl || null)
+                    .catch(error => {
+                      console.error('Failed to fetch image:', error)
+                      return null
+                    })
+                )
+              }
+            }
+            resolve()
+          })
+        })
+      }
+    }
+
+    const results = await Promise.all(imagePromises)
+    const newImages = results.filter((img): img is string => img !== null)
+    
+    if (newImages.length > 0) {
+      setReferenceImages(prev => [...prev, ...newImages])
+    } else if (results.length > 0) {
+      setError('Failed to load some images. Please try again.')
+    }
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-50">
       <div className="w-full max-w-2xl mx-auto">
@@ -129,10 +215,17 @@ export default function Home() {
                 )}
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-2 px-4 border-2 border-dashed border-gray-300 rounded-md hover:border-gray-400 transition-colors flex items-center justify-center gap-2 text-gray-600"
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`w-full py-2 px-4 border-2 border-dashed rounded-md transition-colors flex items-center justify-center gap-2 ${
+                    isDragging 
+                      ? 'border-blue-500 bg-blue-50 text-blue-600' 
+                      : 'border-gray-300 hover:border-gray-400 text-gray-600'
+                  }`}
                 >
                   <Upload size={20} />
-                  Add reference images
+                  {isDragging ? 'Drop images here' : 'Add reference images (drag & drop supported)'}
                 </button>
                 <input
                   ref={fileInputRef}
