@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
           content: userContent
         }
       ],
-      tools: [{ type: 'image_generation', background: "transparent" }]
+      tools: [{ type: 'image_generation', background: "transparent", quality: "low" }]
     })
 
     const imageData = response.output
