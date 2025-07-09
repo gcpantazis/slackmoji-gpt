@@ -16,29 +16,65 @@ export async function POST(request: NextRequest) {
     }
 
     // Build the prompt for OpenAI
-    const prompt = `Flat, minimal emoji icon for "${word}", centered, no text, white background, square, high contrast`
+    const prompt = `
+    Flat emoji-style illustration of a single **${word}**.
+    
+    Canvas:
+    • Square, 1024 × 1024 px, RGBA, background white.
+    
+    Object:
+    • Centered and fills 80–90 % of the image (minimal even margin).
+    • No border or outline stroke.
+    • No background color or card.
+    • No text, no other elements.
+    • No drop shadow.
+    • No glow.
+    • No gradient.
+    • No checkerboard.
+    `;
 
+    
+    // DALL-E 3
     // Generate image using OpenAI's new gpt-image-1 model
+    // const response = await openai.images.generate({
+    //   model: 'dall-e-3', // Using DALL-E 3 as gpt-image-1 is not yet available
+    //   prompt,
+    //   size: '1024x1024', // DALL-E 3 only supports 1024x1024 or larger
+    //   n: 1,
+    //   quality: 'standard',
+    //   style: 'vivid'
+    // })
+
+    // if (!response.data || response.data.length === 0) {
+    //   throw new Error('No image generated')
+    // }
+
+    // const imageUrl = response.data[0].url
+    // if (!imageUrl) {
+    //   throw new Error('No image URL returned')
+    // }
+
+    // // Fetch the image from OpenAI
+    // const rawImageBuffer = await fetchImageBuffer(imageUrl)
+
+    // GPT-IMAGE-1
+    // Generate image using OpenAI's gpt-image-1 model
     const response = await openai.images.generate({
-      model: 'dall-e-3', // Using DALL-E 3 as gpt-image-1 is not yet available
+      model: 'gpt-image-1',
       prompt,
-      size: '1024x1024', // DALL-E 3 only supports 1024x1024 or larger
-      n: 1,
-      quality: 'standard',
-      style: 'vivid'
     })
 
     if (!response.data || response.data.length === 0) {
       throw new Error('No image generated')
     }
 
-    const imageUrl = response.data[0].url
-    if (!imageUrl) {
-      throw new Error('No image URL returned')
+    const imageBase64 = response.data[0].b64_json
+    if (!imageBase64) {
+      throw new Error('No base64 image data returned')
     }
 
-    // Fetch the image from OpenAI
-    const rawImageBuffer = await fetchImageBuffer(imageUrl)
+    // Convert base64 to buffer
+    const rawImageBuffer = Buffer.from(imageBase64, 'base64')
 
     // Process the image: remove white background, resize, optimize
     const processedImageBuffer = await processEmojiImage(rawImageBuffer)
