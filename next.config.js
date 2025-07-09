@@ -4,11 +4,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'oaidalleapiprodscus.blob.core.windows.net',
+        hostname: 'oaigptimageapiprodscus.blob.core.windows.net',
       },
       {
         protocol: 'https',
-        hostname: 'dalleprodsec.blob.core.windows.net',
+        hostname: 'gptimageprodsec.blob.core.windows.net',
       },
     ],
   },

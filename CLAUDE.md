@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Slackmoji Maker is a Next.js application that generates custom Slack emojis using OpenAI's DALL-E 3 API. Users input a word or phrase, and the app generates a 128×128px transparent PNG emoji suitable for Slack upload.
+Slackmoji Maker is a Next.js application that generates custom Slack emojis using OpenAI's GPT-IMAGE-1 API. Users input a word or phrase, and the app generates a 128×128px transparent PNG emoji suitable for Slack upload.
 
 Key features:
-- AI-powered emoji generation using OpenAI's DALL-E 3
+- AI-powered emoji generation using OpenAI's GPT-IMAGE-1
 - Automatic white background removal for transparency
 - Image optimization to meet Slack's requirements (≤128KB, 128×128px)
 - One-click download of generated emojis
@@ -80,7 +80,7 @@ I'll provide context for the folders `app` and `lib` based on the files found:
 
 ### (app/api/emoji-generate/route.ts):
 - Handles server-side emoji generation API endpoint
-- Uses OpenAI's DALL-E 3 model to create emoji images
+- Uses OpenAI's GPT-IMAGE-1 model to create emoji images
 - Processes input word into a minimal, centered emoji icon
 - Generates image, removes white background, and returns base64 PNG
 - Includes error handling for invalid inputs or generation failures

@@ -34,12 +34,12 @@ export async function POST(request: NextRequest) {
     `;
 
     
-    // DALL-E 3
+    // GPT-IMAGE-1 (OLD CODE - KEPT FOR REFERENCE)
     // Generate image using OpenAI's new gpt-image-1 model
     // const response = await openai.images.generate({
-    //   model: 'dall-e-3', // Using DALL-E 3 as gpt-image-1 is not yet available
+    //   model: 'gpt-image-1', // Using GPT-IMAGE-1 as gpt-image-1 is not yet available
     //   prompt,
-    //   size: '1024x1024', // DALL-E 3 only supports 1024x1024 or larger
+    //   size: '1024x1024', // GPT-IMAGE-1 only supports 1024x1024 or larger
     //   n: 1,
     //   quality: 'standard',
     //   style: 'vivid'

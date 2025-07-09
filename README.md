@@ -1,10 +1,10 @@
 # Slackmoji Maker
 
-Generate custom Slack emojis with AI! This Next.js application uses OpenAI's DALL-E 3 to create 128×128px transparent PNG emojis that meet Slack's requirements.
+Generate custom Slack emojis with AI! This Next.js application uses OpenAI's GPT-IMAGE-1 to create 128×128px transparent PNG emojis that meet Slack's requirements.
 
 ## Features
 
-- 🎨 AI-powered emoji generation using OpenAI's DALL-E 3
+- 🎨 AI-powered emoji generation using OpenAI's GPT-IMAGE-1
 - 🪄 Automatic white background removal for transparency
 - 📏 Optimized for Slack (128×128px, ≤128KB)
 - 💾 One-click download
@@ -48,7 +48,7 @@ Generate custom Slack emojis with AI! This Next.js application uses OpenAI's DAL
 - **Framework:** Next.js 15 with App Router
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
-- **AI:** OpenAI DALL-E 3 API
+- **AI:** OpenAI GPT-IMAGE-1 API
 - **Image Processing:** Sharp
 
 ## Deployment
