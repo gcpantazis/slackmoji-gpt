@@ -71,3 +71,59 @@ It's very important that we add comments explaining the purpose of each function
    ```
 
 The application will be available at http://localhost:3000
+
+<CLAUDE_CONTEXT_PATROL_DO_NOT_EDIT>
+[git_hash:fdaccb6987fcca28006aa75b68506de9f008cb10]
+I'll provide context for the folders `app` and `lib` based on the files found:
+
+## app Folder
+
+### (app/api/emoji-generate/route.ts):
+- Handles server-side emoji generation API endpoint
+- Uses OpenAI's DALL-E 3 model to create emoji images
+- Processes input word into a minimal, centered emoji icon
+- Generates image, removes white background, and returns base64 PNG
+- Includes error handling for invalid inputs or generation failures
+
+### (app/globals.css):
+- Tailwind CSS configuration file
+- Imports Tailwind's base, components, and utilities styles
+- Sets up global CSS styling for the application
+
+### (app/layout.tsx):
+- Root layout component for the Next.js application
+- Sets metadata for the Slackmoji Maker app
+- Uses Inter font from Google Fonts
+- Provides basic HTML structure with language and body configuration
+
+### (app/page.tsx):
+- Main page component for Slackmoji Maker
+- Client-side React component with state management
+- Provides UI for emoji generation:
+  - Input field for word/phrase
+  - Generate button
+  - Loading state handling
+  - Error message display
+  - Generated emoji preview
+  - Download and Slack upload options
+- Handles image generation request to the `/api/emoji-generate` endpoint
+- Supports downloading generated emoji as PNG
+- Includes responsive design with Tailwind CSS
+
+## lib Folder
+
+### (lib/openai.ts):
+- Initializes OpenAI client with API key from environment variables
+- Provides configured OpenAI instance for API interactions
+
+### (lib/process.ts):
+- Contains image processing utilities for emoji generation
+- `processEmojiImage` function:
+  - Resizes image to 128x128 pixels
+  - Removes white/near-white background
+  - Converts to transparent PNG
+  - Optimizes file size for Slack upload
+- `fetchImageBuffer` function to retrieve image from URL
+
+This documentation provides an overview of the Slackmoji Maker application's structure and key functionalities across the `app` and `lib` directories.
+</CLAUDE_CONTEXT_PATROL_DO_NOT_EDIT>
