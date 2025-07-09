@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     • Square, 1024 × 1024 px, RGBA, background white.
     
     Object:
-    • Centered and fills 80–90 % of the image (minimal even margin).
+    • Centered and fills 95-99% of the image (minimal even margin).
     • No border or outline stroke.
     • No background color or card.
     • No text, no other elements.
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     // Convert base64 to buffer
     const rawImageBuffer = Buffer.from(imageBase64, 'base64')
 
-    // Process the image: remove white background, resize, optimize
+    // Process the image: resize and optimize for Slack
     const processedImageBuffer = await processEmojiImage(rawImageBuffer)
 
     // Convert to base64 for frontend display

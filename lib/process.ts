@@ -2,47 +2,15 @@ import sharp from 'sharp'
 
 export async function processEmojiImage(imageBuffer: Buffer): Promise<Buffer> {
   // Process the image with sharp
-  // 1. Remove white background by making white pixels transparent
-  // 2. Resize to 128x128
-  // 3. Optimize for file size
+  // 1. Resize to 128x128
+  // 2. Optimize for file size
   
-  // First, resize the image while keeping the white background
-  const resized = await sharp(imageBuffer)
+  // Resize the image to 128x128
+  const processedImage = await sharp(imageBuffer)
     .resize(128, 128, {
       fit: 'contain',
-      background: { r: 255, g: 255, b: 255, alpha: 1 }
+      background: { r: 0, g: 0, b: 0, alpha: 0 } // Transparent background for padding
     })
-    .toBuffer()
-
-  // Then remove white background
-  const withTransparency = await sharp(resized)
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true })
-
-  const { data, info } = withTransparency
-  const pixels = new Uint8ClampedArray(data)
-  
-  // Make white/near-white pixels transparent
-  for (let i = 0; i < pixels.length; i += 4) {
-    const r = pixels[i]
-    const g = pixels[i + 1]
-    const b = pixels[i + 2]
-    
-    // If pixel is near-white (threshold: 245)
-    if (r > 245 && g > 245 && b > 245) {
-      pixels[i + 3] = 0 // Set alpha to 0 (transparent)
-    }
-  }
-
-  // Create final processed image from modified pixels
-  const processedImage = await sharp(Buffer.from(pixels), {
-    raw: {
-      width: info.width,
-      height: info.height,
-      channels: 4
-    }
-  })
     .png({
       quality: 100,
       compressionLevel: 9,
