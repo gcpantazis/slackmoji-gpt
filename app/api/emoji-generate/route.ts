@@ -6,7 +6,7 @@ export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {
-    const { word, referenceImages } = await request.json()
+    const { word, referenceImages, quality } = await request.json()
 
     if (!word || typeof word !== 'string') {
       return NextResponse.json(
@@ -19,6 +19,14 @@ export async function POST(request: NextRequest) {
     if (referenceImages && !Array.isArray(referenceImages)) {
       return NextResponse.json(
         { error: 'Reference images must be an array' },
+        { status: 400 }
+      )
+    }
+
+    // Validate quality parameter if provided
+    if (quality && !['low', 'medium', 'high'].includes(quality)) {
+      return NextResponse.json(
+        { error: 'Quality must be low, medium, or high' },
         { status: 400 }
       )
     }
@@ -70,7 +78,11 @@ export async function POST(request: NextRequest) {
           content: userContent
         }
       ],
-      tools: [{ type: 'image_generation', background: "transparent" }]
+      tools: [{ 
+        type: 'image_generation', 
+        background: "transparent",
+        quality: quality || 'medium'
+      }]
     })
 
     const imageData = response.output
