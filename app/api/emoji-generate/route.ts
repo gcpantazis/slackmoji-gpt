@@ -47,61 +47,42 @@ export async function POST(request: NextRequest) {
     • No checkerboard.
     `;
 
-    // Generate image using OpenAI
-    let imageBase64: string | undefined
+    // Generate image using OpenAI with the new combined format
+    const userContent: any[] = [
+      { type: 'input_text', text: prompt }
+    ]
 
+    // Add reference images if provided
     if (referenceImages && referenceImages.length > 0) {
-      // First, analyze the reference images to extract key elements
-      const visionResponse = await openai.chat.completions.create({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: `Analyze these reference images and describe the key visual elements that should be incorporated into a simple emoji design for "${word}". Focus on colors, shapes, and distinctive features. Keep the description concise and suitable for an emoji prompt.`
-              },
-              ...referenceImages.map((image: string) => ({
-                type: 'image_url' as const,
-                image_url: {
-                  url: image.startsWith('data:') ? image : `data:image/jpeg;base64,${image}`
-                }
-              }))
-            ]
-          }
-        ],
-        max_tokens: 200
+      referenceImages.forEach((image: string) => {
+        userContent.push({
+          type: 'input_image',
+          image_url: image.startsWith('data:') ? image : `data:image/jpeg;base64,${image}`
+        })
       })
-
-      const imageAnalysis = visionResponse.choices[0]?.message?.content || ''
-      
-      // Generate the emoji with enhanced prompt based on image analysis
-      const enhancedPrompt = `${prompt}\n\nIncorporate these visual elements from reference images: ${imageAnalysis}\n\nMaintain simplicity suitable for a 128x128 emoji while capturing the essence of the reference images.`
-      
-      const imageResponse = await openai.images.generate({
-        model: 'gpt-image-1',
-        prompt: enhancedPrompt,
-      })
-
-      if (!imageResponse.data || imageResponse.data.length === 0) {
-        throw new Error('No image generated')
-      }
-
-      imageBase64 = imageResponse.data[0].b64_json
-    } else {
-      // Use the standard image generation for text-only requests
-      const response = await openai.images.generate({
-        model: 'gpt-image-1',
-        prompt,
-      })
-
-      if (!response.data || response.data.length === 0) {
-        throw new Error('No image generated')
-      }
-
-      imageBase64 = response.data[0].b64_json
     }
+
+    const response = await openai.responses.create({
+      model: 'gpt-4o',
+      input: [
+        {
+          role: 'user',
+          content: userContent
+        }
+      ],
+      tools: [{ type: 'image_generation', background: "transparent" }]
+    })
+
+    const imageData = response.output
+      .filter((output: any) => output.type === 'image_generation_call')
+      .map((output: any) => output.result)
+
+    if (imageData.length === 0) {
+      throw new Error('No image generated')
+      console.log(response.output)
+    }
+
+    const imageBase64 = imageData[0]
 
     if (!imageBase64) {
       throw new Error('No base64 image data returned')
